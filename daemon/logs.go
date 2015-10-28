@@ -7,7 +7,6 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/docker/docker/daemon/logger"
-	"github.com/docker/docker/daemon/logger/jsonfilelog"
 	derr "github.com/docker/docker/errors"
 	"github.com/docker/docker/pkg/stdcopy"
 )
@@ -130,9 +129,8 @@ func (daemon *Daemon) StartLogging(container *Container) error {
 	copier.Run()
 	container.logDriver = l
 
-	// set LogPath field only for json-file logdriver
-	if jl, ok := l.(*jsonfilelog.JSONFileLogger); ok {
-		container.LogPath = jl.LogPath()
+	if logReader, ok := l.(logger.LogReader); ok {
+		container.LogPath = logReader.LogPath()
 	}
 
 	return nil

@@ -56,7 +56,7 @@ func init() {
 // New creates new JSONFileLogger which writes to filename passed in
 // on given context.
 func New(ctx logger.Context) (logger.Logger, error) {
-	log, err := os.OpenFile(ctx.LogPath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600)
+	log, err := os.OpenFile(logPath(ctx), os.O_RDWR|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +209,11 @@ func ValidateLogOpt(cfg map[string]string) error {
 
 // LogPath returns the location the given json logger logs to.
 func (l *JSONFileLogger) LogPath() string {
-	return l.ctx.LogPath
+	return logPath(l.ctx)
+}
+
+func logPath(ctx logger.Context) string {
+	return fmt.Sprintf("%s/%s-json.log", ctx.RootResourcePath, ctx.ContainerID)
 }
 
 // Close closes underlying file and signals all readers to stop.
@@ -254,7 +258,7 @@ func (l *JSONFileLogger) ReadLogs(config logger.ReadConfig) *logger.LogWatcher {
 func (l *JSONFileLogger) readLogs(logWatcher *logger.LogWatcher, config logger.ReadConfig) {
 	defer close(logWatcher.Msg)
 
-	pth := l.ctx.LogPath
+	pth := l.LogPath()
 	var files []io.ReadSeeker
 	for i := l.n; i > 1; i-- {
 		f, err := os.Open(fmt.Sprintf("%s.%d", pth, i-1))

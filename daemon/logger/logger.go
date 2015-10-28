@@ -49,6 +49,7 @@ type ReadConfig struct {
 type LogReader interface {
 	// Read logs from underlying logging backend
 	ReadLogs(ReadConfig) *LogWatcher
+	LogPath() string
 }
 
 // LogWatcher is used when consuming logs read from the LogReader interface.

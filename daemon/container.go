@@ -3,7 +3,6 @@ package daemon
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -311,13 +310,11 @@ func (container *Container) StartLogger(cfg runconfig.LogConfig) (logger.Logger,
 		ContainerLabels:     container.Config.Labels,
 	}
 
-	// Set logging file for "json-logger"
-	if cfg.Type == jsonfilelog.Name {
-		ctx.LogPath, err = container.getRootResourcePath(fmt.Sprintf("%s-json.log", container.ID))
-		if err != nil {
-			return nil, err
-		}
+	ctx.RootResourcePath, err = container.getRootResourcePath("")
+	if err != nil {
+		return nil, err
 	}
+
 	return c(ctx)
 }
 

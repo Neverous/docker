@@ -19,7 +19,7 @@ type Context struct {
 	ContainerCreated    time.Time
 	ContainerEnv        []string
 	ContainerLabels     map[string]string
-	LogPath             string
+	RootResourcePath    string
 }
 
 // ExtraAttributes returns the user-defined extra attributes (labels,
